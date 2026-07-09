@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Providers from "./providers";
 import "./globals.css";
 
@@ -11,7 +12,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
       <body className="app-body">
-        <Providers>{children}</Providers>
+        <AntdRegistry>
+          <Providers>{children}</Providers>
+        </AntdRegistry>
       </body>
     </html>
   );

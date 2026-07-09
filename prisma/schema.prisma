@@ -8,11 +8,14 @@ generator client {
 }
 
 model Submission {
-  id        Int      @id @default(autoincrement())
-  userEmail String   @map("user_email")
-  nom       String
-  message   String
-  createdAt DateTime @default(now()) @map("created_at")
+  id             Int      @id @default(autoincrement())
+  userEmail      String   @map("user_email")
+  nom            String
+  message        String
+  dateEvenement  DateTime @map("date_evenement")
+  priorite       String
+  categorie      String
+  createdAt      DateTime @default(now()) @map("created_at")
 
   @@map("submissions")
 }

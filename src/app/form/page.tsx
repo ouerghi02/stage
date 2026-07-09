@@ -3,16 +3,73 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Table, Tag, Alert, Typography } from "antd";
+import type { TableProps } from "antd";
 import AppShell from "@/components/AppShell";
-import styles from "./page.module.css";
 
 type Submission = {
   id: number;
   userEmail: string;
   nom: string;
   message: string;
+  dateEvenement: string;
+  priorite: "basse" | "moyenne" | "haute";
+  categorie: "general" | "support" | "reclamation";
   createdAt: string;
 };
+
+const priorityColor: Record<Submission["priorite"], string> = {
+  basse: "green",
+  moyenne: "orange",
+  haute: "red",
+};
+
+const categoryLabel: Record<Submission["categorie"], string> = {
+  general: "Général",
+  support: "Support",
+  reclamation: "Réclamation",
+};
+
+const columns: TableProps<Submission>["columns"] = [
+  { title: "Utilisateur", dataIndex: "userEmail", key: "userEmail" },
+  { title: "Nom", dataIndex: "nom", key: "nom", sorter: (a, b) => a.nom.localeCompare(b.nom) },
+  { title: "Message", dataIndex: "message", key: "message", ellipsis: true },
+  {
+    title: "Date événement",
+    dataIndex: "dateEvenement",
+    key: "dateEvenement",
+    render: (value: string) => new Date(value).toLocaleDateString("fr-FR"),
+    sorter: (a, b) => new Date(a.dateEvenement).getTime() - new Date(b.dateEvenement).getTime(),
+  },
+  {
+    title: "Priorité",
+    dataIndex: "priorite",
+    key: "priorite",
+    filters: [
+      { text: "Basse", value: "basse" },
+      { text: "Moyenne", value: "moyenne" },
+      { text: "Haute", value: "haute" },
+    ],
+    onFilter: (value, record) => record.priorite === value,
+    render: (priorite: Submission["priorite"]) => (
+      <Tag color={priorityColor[priorite]}>{priorite.toUpperCase()}</Tag>
+    ),
+  },
+  {
+    title: "Catégorie",
+    dataIndex: "categorie",
+    key: "categorie",
+    render: (categorie: Submission["categorie"]) => categoryLabel[categorie],
+  },
+  {
+    title: "Créé le",
+    dataIndex: "createdAt",
+    key: "createdAt",
+    render: (value: string) => new Date(value).toLocaleString("fr-FR"),
+    defaultSortOrder: "descend",
+    sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  },
+];
 
 export default function FormPage() {
   const { data: session, status } = useSession();
@@ -54,47 +111,30 @@ export default function FormPage() {
   }, [status]);
 
   if (status === "loading" || status === "unauthenticated") {
-    return <p className={styles.loadingText}>Chargement...</p>;
+    return <Typography.Paragraph>Chargement...</Typography.Paragraph>;
   }
 
   return (
     <AppShell>
-      <h1>Toutes les soumissions</h1>
-      <p className={styles.subtitle}>Connecté en tant que : {session?.user?.email}</p>
+      <Typography.Title level={2}>Toutes les soumissions</Typography.Title>
+      <p className="text-gray-500">Connecté en tant que : {session?.user?.email}</p>
 
-      {isLoading && <p>Chargement des données...</p>}
-      {error && <p className={styles.errorText}>❌ {error}</p>}
-
-      {!isLoading && !error && submissions.length === 0 && (
-        <p>Aucune soumission pour le moment.</p>
+      {error && (
+        <Alert className="mb-4" type="error" showIcon message={error} />
       )}
 
-      <div className={styles.submissionsContainer}>
-        {submissions.map((s) => (
-          <div
-            key={s.id}
-            className={styles.card}
-          >
-            <ReadOnlyField label="Utilisateur" value={s.userEmail} />
-            <ReadOnlyField label="Nom" value={s.nom} />
-            <ReadOnlyField label="Message" value={s.message} />
-            <ReadOnlyField label="Date" value={new Date(s.createdAt).toLocaleString("fr-FR")} />
-          </div>
-        ))}
-      </div>
+      <Table<Submission>
+        columns={columns}
+        dataSource={submissions}
+        rowKey="id"
+        loading={isLoading}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "20", "50"],
+          showTotal: (total) => `${total} soumissions`,
+        }}
+      />
     </AppShell>
-  );
-}
-
-function ReadOnlyField({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className={styles.fieldLabel}>
-        {label}
-      </span>
-      <div className={styles.fieldValue}>
-        {value}
-      </div>
-    </div>
   );
 }

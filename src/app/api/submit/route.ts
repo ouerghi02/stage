@@ -10,6 +10,13 @@ import { checkRateLimit } from "@/lib/rateLimit";
 const submissionSchema = z.object({
   nom: z.string().trim().min(1, "Le nom est requis").max(100),
   message: z.string().trim().min(1, "Le message est requis").max(2000),
+  dateEvenement: z.coerce.date({ errorMap: () => ({ message: "Date invalide" }) }),
+  priorite: z.enum(["basse", "moyenne", "haute"], {
+    errorMap: () => ({ message: "Priorité invalide" }),
+  }),
+  categorie: z.enum(["general", "support", "reclamation"], {
+    errorMap: () => ({ message: "Catégorie invalide" }),
+  }),
 });
 
 export async function POST(request: Request) {
@@ -50,6 +57,9 @@ export async function POST(request: Request) {
         userEmail: session.user.email,
         nom: parsed.data.nom,
         message: parsed.data.message,
+        dateEvenement: parsed.data.dateEvenement,
+        priorite: parsed.data.priorite,
+        categorie: parsed.data.categorie,
       },
     });
 
