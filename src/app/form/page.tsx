@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
+import styles from "./page.module.css";
 
 type Submission = {
   id: number;
@@ -53,33 +54,26 @@ export default function FormPage() {
   }, [status]);
 
   if (status === "loading" || status === "unauthenticated") {
-    return <p style={{ padding: 40 }}>Chargement...</p>;
+    return <p className={styles.loadingText}>Chargement...</p>;
   }
 
   return (
     <AppShell>
       <h1>Toutes les soumissions</h1>
-      <p style={{ color: "#6b7280" }}>Connecté en tant que : {session?.user?.email}</p>
+      <p className={styles.subtitle}>Connecté en tant que : {session?.user?.email}</p>
 
       {isLoading && <p>Chargement des données...</p>}
-      {error && <p style={{ color: "red" }}>❌ {error}</p>}
+      {error && <p className={styles.errorText}>❌ {error}</p>}
 
       {!isLoading && !error && submissions.length === 0 && (
         <p>Aucune soumission pour le moment.</p>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
+      <div className={styles.submissionsContainer}>
         {submissions.map((s) => (
           <div
             key={s.id}
-            style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: 8,
-              padding: 16,
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-            }}
+            className={styles.card}
           >
             <ReadOnlyField label="Utilisateur" value={s.userEmail} />
             <ReadOnlyField label="Nom" value={s.nom} />
@@ -95,17 +89,10 @@ export default function FormPage() {
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span style={{ fontSize: 12, color: "#6b7280", display: "block", marginBottom: 2 }}>
+      <span className={styles.fieldLabel}>
         {label}
       </span>
-      <div
-        style={{
-          padding: "8px 10px",
-          background: "#f9fafb",
-          borderRadius: 6,
-          border: "1px solid #e5e7eb",
-        }}
-      >
+      <div className={styles.fieldValue}>
         {value}
       </div>
     </div>

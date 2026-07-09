@@ -1,0 +1,35 @@
+.appShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.appShellMain {
+  flex: 1;
+  padding: 32px 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.appShellMain h1 {
+  color: #1f2937;
+  font-size: 28px;
+  margin: 0 0 20px 0;
+}
+
+.appShellMain p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .appShellMain {
+    padding: 20px 16px;
+  }
+
+  .appShellMain h1 {
+    font-size: 24px;
+  }
+}

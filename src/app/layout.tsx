@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Providers from "./providers";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Stage Keyrus - Demo Keycloak",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
-      <body style={{ fontFamily: "sans-serif", margin: 0 }}>
+      <body className="app-body">
         <Providers>{children}</Providers>
       </body>
     </html>

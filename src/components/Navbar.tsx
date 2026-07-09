@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import styles from "./Navbar.module.css";
 
 const navItems = [
   { href: "/", label: "Accueil" },
@@ -14,38 +15,17 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav
-      style={{
-        width: 220,
-        minHeight: "100vh",
-        background: "#111827",
-        color: "white",
-        padding: "24px 16px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        position: "sticky",
-        top: 0,
-        flexShrink: 0,
-      }}
-    >
+    <nav className={styles.navbar}>
       <div>
-        <h2 style={{ fontSize: 18, marginBottom: 24 }}>Stage Keyrus</h2>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+        <h2 className={styles.navbar__title}>Stage Keyrus</h2>
+        <ul className={styles.navbar__list}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  style={{
-                    display: "block",
-                    padding: "10px 12px",
-                    borderRadius: 6,
-                    textDecoration: "none",
-                    color: "white",
-                    background: isActive ? "#374151" : "transparent",
-                  }}
+                  className={isActive ? `${styles.navbar__link} ${styles["navbar__link--active"]}` : styles.navbar__link}
                 >
                   {item.label}
                 </Link>
@@ -55,17 +35,7 @@ export default function Navbar() {
         </ul>
       </div>
 
-      <button
-        onClick={() => signOut()}
-        style={{
-          padding: "10px 12px",
-          background: "#dc2626",
-          color: "white",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-        }}
-      >
+      <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
         Se déconnecter
       </button>
     </nav>

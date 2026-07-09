@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import Navbar from "./Navbar";
+import styles from "./AppShell.module.css";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className={styles.appShell}>
       <Navbar />
-      <main style={{ flex: 1, padding: 40 }}>{children}</main>
+      <main className={styles.appShellMain}>{children}</main>
     </div>
   );
 }

@@ -2,32 +2,27 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   if (status === "loading") {
-    return <p style={{ padding: 40 }}>Chargement...</p>;
+    return <p className={styles.loading}>Chargement...</p>;
   }
 
   return (
-    <main style={{ padding: 40, textAlign: "center" }}>
+    <main className={styles.main}>
       <h1>Bienvenue sur l&apos;application (Stage Keyrus)</h1>
 
       {!session ? (
         <>
           <p>Vous n&apos;êtes pas connecté.</p>
           <button
+            type="button"
             onClick={() => signIn("keycloak")}
-            style={{
-              padding: "10px 20px",
-              background: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-            }}
+            className={styles.primaryButton}
           >
             Se connecter avec Keycloak
           </button>
@@ -36,34 +31,21 @@ export default function Home() {
         <>
           <p>Connecté en tant que : {session.user?.email ?? session.user?.name}</p>
           {session.error === "RefreshAccessTokenError" && (
-            <p style={{ color: "red" }}>
+            <p className={styles.error}>
               Votre session a expiré, merci de vous reconnecter.
             </p>
           )}
           <button
+            type="button"
             onClick={() => router.push("/form")}
-            style={{
-              padding: "10px 20px",
-              marginRight: 10,
-              background: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-            }}
+            className={styles.primaryButton}
           >
             Voir les soumissions
           </button>
           <button
+            type="button"
             onClick={() => signOut()}
-            style={{
-              padding: "10px 20px",
-              background: "#e00",
-              color: "white",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-            }}
+            className={styles.dangerButton}
           >
             Se déconnecter
           </button>

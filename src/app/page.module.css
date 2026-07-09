@@ -1,0 +1,49 @@
+.loading {
+  padding: 40px;
+}
+
+.main {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.primaryButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 8px 8px 8px 0;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: #0051cc;
+}
+
+.dangerButton {
+  background-color: #f14668;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 8px 8px 8px 0;
+  transition: background-color 0.2s;
+}
+
+.dangerButton:hover {
+  background-color: #d03c56;
+}
+
+.error {
+  color: #f14668;
+  padding: 12px;
+  background-color: #fff5f7;
+  border-radius: 6px;
+  margin: 12px 0;
+}
