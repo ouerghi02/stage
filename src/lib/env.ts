@@ -10,7 +10,7 @@ const envSchema = z.object({
   KEYCLOAK_CLIENT_SECRET: z.string().min(1, "KEYCLOAK_CLIENT_SECRET est requis"),
   KEYCLOAK_ISSUER: z.string().url("KEYCLOAK_ISSUER doit être une URL valide"),
   NEXTAUTH_SECRET: z.string().min(16, "NEXTAUTH_SECRET doit faire au moins 16 caractères"),
-  NEXTAUTH_URL: z.string().url(),
+  NEXTAUTH_URL: z.string().url().or(z.string().min(1)).optional(),
   DATABASE_URL: z.string().min(1, "DATABASE_URL est requis"),
 });
 
