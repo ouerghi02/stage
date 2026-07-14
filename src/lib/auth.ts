@@ -51,7 +51,6 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   secret: env.NEXTAUTH_SECRET,
-  trustHost: true,
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {

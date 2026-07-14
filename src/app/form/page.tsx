@@ -1,9 +1,10 @@
+// src/app/form/page.tsx
 "use client";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Table, Tag, Alert, Typography } from "antd";
+import { useEffect, useState, useCallback } from "react";
+import { Table, Tag, Alert, Typography, Input } from "antd";
 import type { TableProps } from "antd";
 import AppShell from "@/components/AppShell";
 
@@ -30,85 +31,133 @@ const categoryLabel: Record<Submission["categorie"], string> = {
   reclamation: "Réclamation",
 };
 
-const columns: TableProps<Submission>["columns"] = [
-  { title: "Utilisateur", dataIndex: "userEmail", key: "userEmail" },
-  { title: "Nom", dataIndex: "nom", key: "nom", sorter: (a, b) => a.nom.localeCompare(b.nom) },
-  { title: "Message", dataIndex: "message", key: "message", ellipsis: true },
-  {
-    title: "Date événement",
-    dataIndex: "dateEvenement",
-    key: "dateEvenement",
-    render: (value: string) => new Date(value).toLocaleDateString("fr-FR"),
-    sorter: (a, b) => new Date(a.dateEvenement).getTime() - new Date(b.dateEvenement).getTime(),
-  },
-  {
-    title: "Priorité",
-    dataIndex: "priorite",
-    key: "priorite",
-    filters: [
-      { text: "Basse", value: "basse" },
-      { text: "Moyenne", value: "moyenne" },
-      { text: "Haute", value: "haute" },
-    ],
-    onFilter: (value, record) => record.priorite === value,
-    render: (priorite: Submission["priorite"]) => (
-      <Tag color={priorityColor[priorite]}>{priorite.toUpperCase()}</Tag>
-    ),
-  },
-  {
-    title: "Catégorie",
-    dataIndex: "categorie",
-    key: "categorie",
-    render: (categorie: Submission["categorie"]) => categoryLabel[categorie],
-  },
-  {
-    title: "Créé le",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (value: string) => new Date(value).toLocaleString("fr-FR"),
-    defaultSortOrder: "descend",
-    sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  },
-];
+type Params = {
+  page: number;
+  pageSize: number;
+  sortField: string;
+  sortOrder: "ascend" | "descend";
+  search: string;
+  priorite: string[];
+  categorie: string[];
+};
 
 export default function FormPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+
+  const [params, setParams] = useState<Params>({
+    page: 1,
+    pageSize: 10,
+    sortField: "createdAt",
+    sortOrder: "descend",
+    search: "",
+    priorite: [],
+    categorie: [],
+  });
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
+    if (status === "unauthenticated") router.push("/");
   }, [status, router]);
+
+  const fetchSubmissions = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const qs = new URLSearchParams({
+        page: String(params.page),
+        pageSize: String(params.pageSize),
+        sortField: params.sortField,
+        sortOrder: params.sortOrder,
+      });
+      if (params.search) qs.set("search", params.search);
+      if (params.priorite.length) qs.set("priorite", params.priorite.join(","));
+      if (params.categorie.length) qs.set("categorie", params.categorie.join(","));
+
+      const res = await fetch(`/api/submissions?${qs.toString()}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erreur lors du chargement");
+
+      setSubmissions(data.submissions);
+      setTotal(data.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params]);
 
   useEffect(() => {
     if (status !== "authenticated") return;
-
-    const fetchSubmissions = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch("/api/submissions");
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "Erreur lors du chargement");
-        }
-
-        setSubmissions(data.submissions);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erreur inconnue");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchSubmissions();
-  }, [status]);
+  }, [status, fetchSubmissions]);
+
+  const columns: TableProps<Submission>["columns"] = [
+    { title: "Utilisateur", dataIndex: "userEmail", key: "userEmail" },
+    { title: "Nom", dataIndex: "nom", key: "nom", sorter: true },
+    { title: "Message", dataIndex: "message", key: "message", ellipsis: true },
+    {
+      title: "Date événement",
+      dataIndex: "dateEvenement",
+      key: "dateEvenement",
+      render: (value: string) => new Date(value).toLocaleDateString("fr-FR"),
+      sorter: true,
+    },
+    {
+      title: "Priorité",
+      dataIndex: "priorite",
+      key: "priorite",
+      filters: [
+        { text: "Basse", value: "basse" },
+        { text: "Moyenne", value: "moyenne" },
+        { text: "Haute", value: "haute" },
+      ],
+      render: (priorite: Submission["priorite"]) => (
+        <Tag color={priorityColor[priorite]}>{priorite.toUpperCase()}</Tag>
+      ),
+    },
+    {
+      title: "Catégorie",
+      dataIndex: "categorie",
+      key: "categorie",
+      filters: [
+        { text: "Général", value: "general" },
+        { text: "Support", value: "support" },
+        { text: "Réclamation", value: "reclamation" },
+      ],
+      render: (categorie: Submission["categorie"]) => categoryLabel[categorie],
+    },
+    {
+      title: "Créé le",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value: string) => new Date(value).toLocaleString("fr-FR"),
+      sorter: true,
+      defaultSortOrder: "descend",
+    },
+  ];
+
+  const handleTableChange: TableProps<Submission>["onChange"] = (pagination, filters, sorter) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    setParams((prev) => ({
+      ...prev,
+      page: pagination.current ?? 1,
+      pageSize: pagination.pageSize ?? 10,
+      sortField: (s?.field as string) ?? prev.sortField,
+      sortOrder: s?.order === "ascend" || s?.order === "descend" ? s.order : prev.sortOrder,
+      priorite: (filters.priorite as string[]) ?? [],
+      categorie: (filters.categorie as string[]) ?? [],
+    }));
+  };
+
+  const handleSearch = (value: string) => {
+    setParams((prev) => ({ ...prev, page: 1, search: value }));
+  };
 
   if (status === "loading" || status === "unauthenticated") {
     return <Typography.Paragraph>Chargement...</Typography.Paragraph>;
@@ -119,20 +168,30 @@ export default function FormPage() {
       <Typography.Title level={2}>Toutes les soumissions</Typography.Title>
       <p className="text-gray-500">Connecté en tant que : {session?.user?.email}</p>
 
-      {error && (
-        <Alert className="mb-4" type="error" showIcon message={error} />
-      )}
+      {error && <Alert className="mb-4" type="error" showIcon message={error} />}
+
+      <Input.Search
+        placeholder="Rechercher par nom..."
+        allowClear
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onSearch={handleSearch}
+        style={{ maxWidth: 320, marginBottom: 16 }}
+      />
 
       <Table<Submission>
         columns={columns}
         dataSource={submissions}
         rowKey="id"
         loading={isLoading}
+        onChange={handleTableChange}
         pagination={{
-          pageSize: 10,
+          current: params.page,
+          pageSize: params.pageSize,
+          total,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50"],
-          showTotal: (total) => `${total} soumissions`,
+          showTotal: (t) => `${t} soumissions`,
         }}
       />
     </AppShell>
