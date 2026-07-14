@@ -1,10 +1,9 @@
-// src/app/categorie/page.tsx
 "use client";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Card, Col, Row, Statistic, Typography, Spin } from "antd";
+import { Card, Col, Row, Statistic, Typography, Spin, Alert } from "antd";
 import AppShell from "@/components/AppShell";
 
 type Stats = { byCategorie: { categorie: string; count: number }[] };
@@ -20,6 +19,7 @@ export default function CategoriePage() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/");
@@ -27,9 +27,17 @@ export default function CategoriePage() {
 
   useEffect(() => {
     if (status !== "authenticated") return;
+
+    setError(null);
     fetch("/api/stats")
-      .then((res) => res.json())
-      .then(setStats)
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Erreur lors du chargement");
+        }
+        setStats(data);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Erreur inconnue"))
       .finally(() => setIsLoading(false));
   }, [status]);
 
@@ -41,9 +49,11 @@ export default function CategoriePage() {
     <AppShell>
       <Typography.Title level={2}>Soumissions par catégorie</Typography.Title>
 
-      {isLoading || !stats ? (
+      {error && <Alert type="error" showIcon message={error} style={{ marginBottom: 16 }} />}
+
+      {isLoading ? (
         <Spin />
-      ) : (
+      ) : stats ? (
         <Row gutter={16}>
           {stats.byCategorie.map(({ categorie, count }) => {
             const meta = categoryMeta[categorie] ?? { label: categorie, color: "#666" };
@@ -56,7 +66,7 @@ export default function CategoriePage() {
             );
           })}
         </Row>
-      )}
+      ) : null}
     </AppShell>
   );
 }

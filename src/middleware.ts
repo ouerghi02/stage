@@ -3,7 +3,7 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 const ADMIN_ROLE = "admin"; // garde en phase avec src/lib/rbac.ts
-const ADMIN_ONLY_PATHS = ["/form", "/categorie", "/api/submissions", "/api/stats"];
+const ADMIN_ONLY_PATHS = ["/form", "/categorie", "/api/submissions"];
 
 export default withAuth(
   function middleware(req) {

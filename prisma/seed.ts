@@ -11,7 +11,7 @@ async function main() {
         message: "Première soumission de test",
         dateEvenement: new Date(),
         priorite: "moyenne",
-        categorie: "général",
+        categorie: "general",
       },
       {
         userEmail: "test@monapp.local",
@@ -19,7 +19,7 @@ async function main() {
         message: "Deuxième soumission de test",
         dateEvenement: new Date(),
         priorite: "haute",
-        categorie: "feedback",
+        categorie: "support",
       },
       {
         userEmail: "autre@monapp.local",
@@ -27,7 +27,7 @@ async function main() {
         message: "Un message d'un autre utilisateur",
         dateEvenement: new Date(),
         priorite: "basse",
-        categorie: "question",
+        categorie: "reclamation",
       },
     ],
   });

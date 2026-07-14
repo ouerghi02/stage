@@ -3,7 +3,7 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Card, Col, Row, Statistic, Typography, Spin, Empty } from "antd";
+import { Card, Col, Row, Statistic, Typography, Spin, Empty, Alert } from "antd";
 import { Pie, Column } from "@ant-design/plots";
 import styles from "./page.module.css";
 
@@ -19,13 +19,25 @@ export default function Home() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [statsError, setStatsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status !== "authenticated") return;
+
     setLoadingStats(true);
+    setStatsError(null);
+
     fetch("/api/stats")
-      .then((res) => res.json())
-      .then(setStats)
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Erreur lors du chargement des statistiques");
+        }
+        setStats(data);
+      })
+      .catch((err) => {
+        setStatsError(err instanceof Error ? err.message : "Erreur inconnue");
+      })
       .finally(() => setLoadingStats(false));
   }, [status]);
 
@@ -64,6 +76,8 @@ export default function Home() {
           <section className={styles.dashboard}>
             {loadingStats ? (
               <Spin />
+            ) : statsError ? (
+              <Alert type="error" showIcon message={statsError} />
             ) : !stats || stats.total === 0 ? (
               <Empty description="Aucune donnée disponible" />
             ) : (

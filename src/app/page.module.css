@@ -1,3 +1,53 @@
+.loading {
+  padding: 40px;
+}
+
+.main {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.primaryButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 8px 8px 8px 0;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: #0051cc;
+}
+
+.dangerButton {
+  background-color: #f14668;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 8px 8px 8px 0;
+  transition: background-color 0.2s;
+}
+
+.dangerButton:hover {
+  background-color: #d03c56;
+}
+
+.error {
+  color: #f14668;
+  padding: 12px;
+  background-color: #fff5f7;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -15,28 +65,4 @@
 
 .chartsRow > * {
   margin-bottom: 16px;
-}
-.navbar__actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.navbar__new-button {
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.navbar__new-button:hover {
-  background-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
