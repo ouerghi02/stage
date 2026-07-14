@@ -32,4 +32,13 @@
   .appShellMain h1 {
     font-size: 24px;
   }
+  .navbar__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .navbar__new-button {
+    width: 100%;
+    text-align: center;
+  }
 }

@@ -1,18 +1,22 @@
+// src/components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import styles from "./Navbar.module.css";
 
-const navItems = [
-  { href: "/", label: "Accueil" },
+const baseNavItems = [{ href: "/", label: "Accueil" }];
+const adminNavItems = [
   { href: "/form", label: "Soumissions" },
-  { href: "/submit", label: "Nouvelle soumission" },
+  { href: "/categorie", label: "Catégorie" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.roles?.includes("admin") ?? false;
+  const navItems = isAdmin ? [...baseNavItems, ...adminNavItems] : baseNavItems;
 
   return (
     <nav className={styles.navbar}>
@@ -35,9 +39,14 @@ export default function Navbar() {
         </ul>
       </div>
 
-      <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
-        Se déconnecter
-      </button>
+      <div className={styles.navbar__actions}>
+        <Link href="/submit" className={styles["navbar__new-button"]}>
+          + Nouvelle soumission
+        </Link>
+        <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
+          Se déconnecter
+        </button>
+      </div>
     </nav>
   );
 }
