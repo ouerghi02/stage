@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { isAdmin } from "@/lib/rbac";
 
 const ALLOWED_SORT_FIELDS = ["nom", "dateEvenement", "createdAt", "priorite", "categorie", "userEmail"] as const;
 type SortField = (typeof ALLOWED_SORT_FIELDS)[number];
@@ -14,10 +13,6 @@ export async function GET(request: NextRequest) {
 
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-  }
-
-  if (!isAdmin(session)) {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs" }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);

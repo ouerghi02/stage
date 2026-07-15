@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import styles from "./Navbar.module.css";
 
 const baseNavItems = [{ href: "/", label: "Accueil" }];
@@ -14,9 +14,7 @@ const adminNavItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.roles?.includes("admin") ?? false;
-  const navItems = isAdmin ? [...baseNavItems, ...adminNavItems] : baseNavItems;
+  const navItems = [...baseNavItems, ...adminNavItems];
 
   return (
     <nav className={styles.navbar}>
@@ -40,9 +38,6 @@ export default function Navbar() {
       </div>
 
       <div className={styles.navbar__actions}>
-        <Link href="/submit" className={styles["navbar__new-button"]}>
-          + Nouvelle soumission
-        </Link>
         <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
           Se déconnecter
         </button>

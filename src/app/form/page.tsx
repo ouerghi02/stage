@@ -2,9 +2,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Alert, Typography, Input } from "antd";
+import { Table, Tag, Alert, Typography, Input, Button } from "antd";
 import type { TableProps } from "antd";
 import AppShell from "@/components/AppShell";
 
@@ -44,6 +44,7 @@ type Params = {
 export default function FormPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [total, setTotal] = useState(0);
@@ -51,14 +52,17 @@ export default function FormPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
 
-  const [params, setParams] = useState<Params>({
-    page: 1,
-    pageSize: 10,
-    sortField: "createdAt",
-    sortOrder: "descend",
-    search: "",
-    priorite: [],
-    categorie: [],
+  const [params, setParams] = useState<Params>(() => {
+    const categorieFromUrl = searchParams.get("categorie");
+    return {
+      page: 1,
+      pageSize: 10,
+      sortField: "createdAt",
+      sortOrder: "descend",
+      search: "",
+      priorite: [],
+      categorie: categorieFromUrl ? [categorieFromUrl] : [],
+    };
   });
 
   useEffect(() => {
@@ -117,6 +121,7 @@ export default function FormPage() {
         { text: "Moyenne", value: "moyenne" },
         { text: "Haute", value: "haute" },
       ],
+      filteredValue: params.priorite.length ? params.priorite : null,
       render: (priorite: Submission["priorite"]) => (
         <Tag color={priorityColor[priorite]}>{priorite.toUpperCase()}</Tag>
       ),
@@ -130,6 +135,7 @@ export default function FormPage() {
         { text: "Support", value: "support" },
         { text: "Réclamation", value: "reclamation" },
       ],
+      filteredValue: params.categorie.length ? params.categorie : null,
       render: (categorie: Submission["categorie"]) => categoryLabel[categorie],
     },
     {
@@ -170,14 +176,26 @@ export default function FormPage() {
 
       {error && <Alert className="mb-4" type="error" showIcon message={error} />}
 
-      <Input.Search
-        placeholder="Rechercher par nom..."
-        allowClear
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        onSearch={handleSearch}
-        style={{ maxWidth: 320, marginBottom: 16 }}
-      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+        <Input.Search
+          placeholder="Rechercher par nom..."
+          allowClear
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onSearch={handleSearch}
+          style={{ maxWidth: 320 }}
+        />
+        <Button type="primary" onClick={() => router.push("/submit")}>
+          + Nouvelle soumission
+        </Button>
+      </div>
 
       <Table<Submission>
         columns={columns}
