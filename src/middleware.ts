@@ -1,4 +1,4 @@
-// src/middleware.ts
+/* src/middleware.ts
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -26,4 +26,32 @@ export default withAuth(
 
 export const config = {
   matcher: ["/form", "/submit", "/categorie", "/api/submit", "/api/submissions", "/api/stats"],
+};*/
+// middleware.ts
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+
+export default withAuth(
+  function middleware(req) {
+    return NextResponse.next();
+  },
+  {
+    pages: {
+      signIn: "/api/auth/signin",
+    },
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);
+
+export const config = {
+  matcher: [
+    "/",           // Page d'accueil
+    "/form",       // Formulaire
+    "/submit",     // Page de soumission (si elle existe)
+    "/api/submit", // API soumission
+    "/api/stats",  // API statistiques
+    "/api/submissions", // API liste des soumissions
+  ],
 };
