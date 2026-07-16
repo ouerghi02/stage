@@ -1,0 +1,96 @@
+{
+  "app": {
+    "title": "Stage Keyrus"
+  },
+  "nav": {
+    "menu": "Menu",
+    "home": "Home",
+    "submissions": "Submissions",
+    "categorie": "Category",
+    "logout": "Log out",
+    "language": "Language"
+  },
+  "home": {
+    "loading": "Loading...",
+    "welcome": "Welcome to the application (Stage Keyrus)",
+    "notConnected": "You are not logged in.",
+    "loginWithKeycloak": "Sign in with Keycloak",
+    "connectedAs": "Signed in as: {email}",
+    "sessionExpired": "Your session has expired, please sign in again.",
+    "viewSubmissions": "View submissions",
+    "newSubmission": "New submission",
+    "logout": "Log out",
+    "noData": "No data available",
+    "totalSubmissions": "Total submissions",
+    "highPriority": "High priority",
+    "thisMonth": "This month",
+    "byPriority": "Breakdown by priority",
+    "byCategory": "Breakdown by category",
+    "last6Months": "Trend over the last 6 months"
+  },
+  "submissions": {
+    "title": "All submissions",
+    "connectedAs": "Signed in as: {email}",
+    "searchPlaceholder": "Search by name...",
+    "newSubmission": "+ New submission",
+    "columns": {
+      "user": "User",
+      "nom": "Name",
+      "message": "Message",
+      "dateEvenement": "Event date",
+      "priorite": "Priority",
+      "categorie": "Category",
+      "createdAt": "Created on",
+      "actions": "Actions"
+    },
+    "priority": {
+      "basse": "Low",
+      "moyenne": "Medium",
+      "haute": "High"
+    },
+    "category": {
+      "general": "General",
+      "support": "Support",
+      "reclamation": "Complaint"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete this submission?",
+    "deleteConfirmOk": "Yes, delete",
+    "deleteConfirmCancel": "Cancel",
+    "editModalTitle": "Edit submission",
+    "save": "Save",
+    "cancel": "Cancel",
+    "total": "{count} submissions",
+    "updateSuccess": "Submission updated",
+    "deleteSuccess": "Submission deleted",
+    "genericError": "Something went wrong"
+  },
+  "categorie": {
+    "title": "Category management",
+    "tableTitle": "Category list",
+    "formTitle": "Add a category",
+    "columns": {
+      "photo": "Photo",
+      "nom": "Name",
+      "type": "Type",
+      "createdAt": "Created on",
+      "actions": "Actions"
+    },
+    "fields": {
+      "nom": "Name",
+      "nomRequired": "Name is required",
+      "type": "Type",
+      "typeRequired": "Type is required",
+      "photo": "Photo (optional)"
+    },
+    "uploadText": "Choose an image",
+    "submit": "Add",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete this category?",
+    "empty": "No category yet",
+    "addSuccess": "Category added",
+    "deleteSuccess": "Category deleted",
+    "genericError": "Something went wrong"
+  }
+}

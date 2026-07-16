@@ -1,0 +1,96 @@
+{
+  "app": {
+    "title": "Stage Keyrus"
+  },
+  "nav": {
+    "menu": "Menu",
+    "home": "Accueil",
+    "submissions": "Soumissions",
+    "categorie": "Catégorie",
+    "logout": "Se déconnecter",
+    "language": "Langue"
+  },
+  "home": {
+    "loading": "Chargement...",
+    "welcome": "Bienvenue sur l'application (Stage Keyrus)",
+    "notConnected": "Vous n'êtes pas connecté.",
+    "loginWithKeycloak": "Se connecter avec Keycloak",
+    "connectedAs": "Connecté en tant que : {email}",
+    "sessionExpired": "Votre session a expiré, merci de vous reconnecter.",
+    "viewSubmissions": "Voir les soumissions",
+    "newSubmission": "Nouvelle soumission",
+    "logout": "Se déconnecter",
+    "noData": "Aucune donnée disponible",
+    "totalSubmissions": "Total des soumissions",
+    "highPriority": "Priorité haute",
+    "thisMonth": "Ce mois-ci",
+    "byPriority": "Répartition par priorité",
+    "byCategory": "Répartition par catégorie",
+    "last6Months": "Évolution sur les 6 derniers mois"
+  },
+  "submissions": {
+    "title": "Toutes les soumissions",
+    "connectedAs": "Connecté en tant que : {email}",
+    "searchPlaceholder": "Rechercher par nom...",
+    "newSubmission": "+ Nouvelle soumission",
+    "columns": {
+      "user": "Utilisateur",
+      "nom": "Nom",
+      "message": "Message",
+      "dateEvenement": "Date événement",
+      "priorite": "Priorité",
+      "categorie": "Catégorie",
+      "createdAt": "Créé le",
+      "actions": "Actions"
+    },
+    "priority": {
+      "basse": "Basse",
+      "moyenne": "Moyenne",
+      "haute": "Haute"
+    },
+    "category": {
+      "general": "Général",
+      "support": "Support",
+      "reclamation": "Réclamation"
+    },
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteConfirmTitle": "Supprimer cette soumission ?",
+    "deleteConfirmOk": "Oui, supprimer",
+    "deleteConfirmCancel": "Annuler",
+    "editModalTitle": "Modifier la soumission",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "total": "{count} soumissions",
+    "updateSuccess": "Soumission mise à jour",
+    "deleteSuccess": "Soumission supprimée",
+    "genericError": "Une erreur est survenue"
+  },
+  "categorie": {
+    "title": "Gestion des catégories",
+    "tableTitle": "Liste des catégories",
+    "formTitle": "Ajouter une catégorie",
+    "columns": {
+      "photo": "Photo",
+      "nom": "Nom",
+      "type": "Type",
+      "createdAt": "Créée le",
+      "actions": "Actions"
+    },
+    "fields": {
+      "nom": "Nom",
+      "nomRequired": "Le nom est requis",
+      "type": "Type",
+      "typeRequired": "Le type est requis",
+      "photo": "Photo (optionnelle)"
+    },
+    "uploadText": "Choisir une image",
+    "submit": "Ajouter",
+    "delete": "Supprimer",
+    "deleteConfirmTitle": "Supprimer cette catégorie ?",
+    "empty": "Aucune catégorie pour le moment",
+    "addSuccess": "Catégorie ajoutée",
+    "deleteSuccess": "Catégorie supprimée",
+    "genericError": "Une erreur est survenue"
+  }
+}
