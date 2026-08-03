@@ -1,0 +1,35 @@
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.option {
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option:hover:not(:disabled) {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.option:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.option--active {
+  color: #1f2937;
+  background-color: white;
+}

@@ -1,11 +1,12 @@
 // src/i18n/request.ts
 import { cookies } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
-
-export const LOCALE_COOKIE_NAME = "NEXT_LOCALE";
-export const DEFAULT_LOCALE = "fr";
-export const SUPPORTED_LOCALES = ["fr", "en"] as const;
-export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
+import {
+  DEFAULT_LOCALE,
+  LOCALE_COOKIE_NAME,
+  SUPPORTED_LOCALES,
+  type AppLocale,
+} from "./config";
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();

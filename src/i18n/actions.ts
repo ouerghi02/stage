@@ -2,7 +2,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME, SUPPORTED_LOCALES, type AppLocale } from "./request";
+import { DEFAULT_LOCALE, LOCALE_COOKIE_NAME, SUPPORTED_LOCALES, type AppLocale } from "./config";
 
 export async function setLocale(locale: string) {
   const safeLocale: AppLocale = SUPPORTED_LOCALES.includes(locale as AppLocale)
