@@ -8,7 +8,8 @@
     "submissions": "Soumissions",
     "categorie": "Catégorie",
     "logout": "Se déconnecter",
-    "language": "Langue"
+    "language": "Langue",
+    "newSubmission": "Nouvelle soumission"
   },
   "home": {
     "loading": "Chargement...",
@@ -92,5 +93,27 @@
     "addSuccess": "Catégorie ajoutée",
     "deleteSuccess": "Catégorie supprimée",
     "genericError": "Une erreur est survenue"
+  },
+  "submit": {
+    "title": "Nouvelle soumission",
+    "connectedAs": "Connecté en tant que : {email}",
+    "loading": "Chargement...",
+    "fields": {
+      "nom": "Nom",
+      "nomRequired": "Le nom est requis",
+      "message": "Message",
+      "messageRequired": "Le message est requis",
+      "dateEvenement": "Date de l'événement",
+      "dateEvenementRequired": "La date est requise",
+      "priorite": "Priorité",
+      "prioriteRequired": "La priorité est requise",
+      "categorie": "Catégorie",
+      "categorieRequired": "La catégorie est requise",
+      "categoriePlaceholder": "Sélectionner une catégorie"
+    },
+    "submitButton": "Envoyer",
+    "successMessage": "Soumission enregistrée (id : {id})",
+    "networkError": "Erreur réseau, réessayez.",
+    "genericError": "Erreur lors de l'envoi"
   }
 }

@@ -1,11 +1,13 @@
-// src/app/form/page.tsx
 "use client";
 
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Alert, Typography, Input, Button } from "antd";
+import { Table, Tag, Alert, Typography, Input, Button, Modal, Form, DatePicker, Radio, Select, Popconfirm, message } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableProps } from "antd";
+import { useTranslations } from "next-intl";
+import dayjs, { type Dayjs } from "dayjs";
 import AppShell from "@/components/AppShell";
 
 type Submission = {
@@ -19,16 +21,18 @@ type Submission = {
   createdAt: string;
 };
 
+type EditFormValues = {
+  nom: string;
+  message: string;
+  dateEvenement: Dayjs;
+  priorite: Submission["priorite"];
+  categorie: Submission["categorie"];
+};
+
 const priorityColor: Record<Submission["priorite"], string> = {
   basse: "green",
   moyenne: "orange",
   haute: "red",
-};
-
-const categoryLabel: Record<Submission["categorie"], string> = {
-  general: "Général",
-  support: "Support",
-  reclamation: "Réclamation",
 };
 
 type Params = {
@@ -45,12 +49,17 @@ export default function FormPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("submissions");
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
+
+  const [editingRecord, setEditingRecord] = useState<Submission | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editForm] = Form.useForm<EditFormValues>();
 
   const [params, setParams] = useState<Params>(() => {
     const categorieFromUrl = searchParams.get("categorie");
@@ -65,86 +74,158 @@ export default function FormPage() {
     };
   });
 
-  useEffect(() => {
-    if (status === "unauthenticated") router.push("/");
-  }, [status, router]);
-
   const fetchSubmissions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const qs = new URLSearchParams({
-        page: String(params.page),
-        pageSize: String(params.pageSize),
-        sortField: params.sortField,
-        sortOrder: params.sortOrder,
-      });
+      const qs = new URLSearchParams();
+      qs.set("page", String(params.page));
+      qs.set("pageSize", String(params.pageSize));
+      qs.set("sortField", params.sortField);
+      qs.set("sortOrder", params.sortOrder);
       if (params.search) qs.set("search", params.search);
       if (params.priorite.length) qs.set("priorite", params.priorite.join(","));
       if (params.categorie.length) qs.set("categorie", params.categorie.join(","));
 
       const res = await fetch(`/api/submissions?${qs.toString()}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur lors du chargement");
+      if (!res.ok) throw new Error(data.error || t("genericError"));
 
       setSubmissions(data.submissions);
       setTotal(data.total);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setIsLoading(false);
     }
-  }, [params]);
+  }, [params, t]);
 
   useEffect(() => {
     if (status !== "authenticated") return;
     fetchSubmissions();
   }, [status, fetchSubmissions]);
 
+  const openEditModal = (record: Submission) => {
+    setEditingRecord(record);
+    editForm.setFieldsValue({
+      nom: record.nom,
+      message: record.message,
+      dateEvenement: dayjs(record.dateEvenement),
+      priorite: record.priorite,
+      categorie: record.categorie,
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditingRecord(null);
+    editForm.resetFields();
+  };
+
+  const handleEditSave = async (values: EditFormValues) => {
+    if (!editingRecord) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/submissions/${editingRecord.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom: values.nom,
+          message: values.message,
+          dateEvenement: values.dateEvenement.toISOString(),
+          priorite: values.priorite,
+          categorie: values.categorie,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      message.success(t("updateSuccess"));
+      closeEditModal();
+      fetchSubmissions();
+    } catch {
+      message.error(t("genericError"));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`/api/submissions/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      message.success(t("deleteSuccess"));
+      fetchSubmissions();
+    } catch {
+      message.error(t("genericError"));
+    }
+  };
+
   const columns: TableProps<Submission>["columns"] = [
-    { title: "Utilisateur", dataIndex: "userEmail", key: "userEmail" },
-    { title: "Nom", dataIndex: "nom", key: "nom", sorter: true },
-    { title: "Message", dataIndex: "message", key: "message", ellipsis: true },
+    { title: t("columns.user"), dataIndex: "userEmail", key: "userEmail" },
+    { title: t("columns.nom"), dataIndex: "nom", key: "nom", sorter: true },
+    { title: t("columns.message"), dataIndex: "message", key: "message", ellipsis: true },
     {
-      title: "Date événement",
+      title: t("columns.dateEvenement"),
       dataIndex: "dateEvenement",
       key: "dateEvenement",
       render: (value: string) => new Date(value).toLocaleDateString("fr-FR"),
       sorter: true,
     },
     {
-      title: "Priorité",
+      title: t("columns.priorite"),
       dataIndex: "priorite",
       key: "priorite",
       filters: [
-        { text: "Basse", value: "basse" },
-        { text: "Moyenne", value: "moyenne" },
-        { text: "Haute", value: "haute" },
+        { text: t("priority.basse"), value: "basse" },
+        { text: t("priority.moyenne"), value: "moyenne" },
+        { text: t("priority.haute"), value: "haute" },
       ],
       filteredValue: params.priorite.length ? params.priorite : null,
       render: (priorite: Submission["priorite"]) => (
-        <Tag color={priorityColor[priorite]}>{priorite.toUpperCase()}</Tag>
+        <Tag color={priorityColor[priorite]}>{t(`priority.${priorite}`).toUpperCase()}</Tag>
       ),
     },
     {
-      title: "Catégorie",
+      title: t("columns.categorie"),
       dataIndex: "categorie",
       key: "categorie",
       filters: [
-        { text: "Général", value: "general" },
-        { text: "Support", value: "support" },
-        { text: "Réclamation", value: "reclamation" },
+        { text: t("category.general"), value: "general" },
+        { text: t("category.support"), value: "support" },
+        { text: t("category.reclamation"), value: "reclamation" },
       ],
       filteredValue: params.categorie.length ? params.categorie : null,
-      render: (categorie: Submission["categorie"]) => categoryLabel[categorie],
+      render: (categorie: Submission["categorie"]) => t(`category.${categorie}`),
     },
     {
-      title: "Créé le",
+      title: t("columns.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (value: string) => new Date(value).toLocaleString("fr-FR"),
       sorter: true,
       defaultSortOrder: "descend",
+    },
+    {
+      title: t("columns.actions"),
+      key: "actions",
+      fixed: "right",
+      width: 100,
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            aria-label={t("edit")}
+            onClick={() => openEditModal(record)}
+          />
+          <Popconfirm
+            title={t("deleteConfirmTitle")}
+            okText={t("deleteConfirmOk")}
+            cancelText={t("deleteConfirmCancel")}
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Button type="text" danger icon={<DeleteOutlined />} aria-label={t("delete")} />
+          </Popconfirm>
+        </div>
+      ),
     },
   ];
 
@@ -166,13 +247,13 @@ export default function FormPage() {
   };
 
   if (status === "loading" || status === "unauthenticated") {
-    return <Typography.Paragraph>Chargement...</Typography.Paragraph>;
+    return <Typography.Paragraph>{t("connectedAs", { email: "" })}</Typography.Paragraph>;
   }
 
   return (
     <AppShell>
-      <Typography.Title level={2}>Toutes les soumissions</Typography.Title>
-      <p className="text-gray-500">Connecté en tant que : {session?.user?.email}</p>
+      <Typography.Title level={2}>{t("title")}</Typography.Title>
+      <p className="text-gray-500">{t("connectedAs", { email: session?.user?.email ?? "" })}</p>
 
       {error && <Alert className="mb-4" type="error" showIcon message={error} />}
 
@@ -185,7 +266,7 @@ export default function FormPage() {
         }}
       >
         <Input.Search
-          placeholder="Rechercher par nom..."
+          placeholder={t("searchPlaceholder")}
           allowClear
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
@@ -193,7 +274,7 @@ export default function FormPage() {
           style={{ maxWidth: 320 }}
         />
         <Button type="primary" onClick={() => router.push("/submit")}>
-          + Nouvelle soumission
+          {t("newSubmission")}
         </Button>
       </div>
 
@@ -209,9 +290,47 @@ export default function FormPage() {
           total,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50"],
-          showTotal: (t) => `${t} soumissions`,
+          showTotal: (count) => t("total", { count }),
         }}
       />
+
+      <Modal
+        title={t("editModalTitle")}
+        open={!!editingRecord}
+        onCancel={closeEditModal}
+        confirmLoading={isSaving}
+        onOk={() => editForm.submit()}
+        okText={t("save")}
+        cancelText={t("cancel")}
+      >
+        <Form form={editForm} layout="vertical" onFinish={handleEditSave} disabled={isSaving}>
+          <Form.Item name="nom" label={t("columns.nom")} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="message" label={t("columns.message")} rules={[{ required: true }]}>
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item name="dateEvenement" label={t("columns.dateEvenement")} rules={[{ required: true }]}>
+            <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+          </Form.Item>
+          <Form.Item name="priorite" label={t("columns.priorite")} rules={[{ required: true }]}>
+            <Radio.Group>
+              <Radio value="basse">{t("priority.basse")}</Radio>
+              <Radio value="moyenne">{t("priority.moyenne")}</Radio>
+              <Radio value="haute">{t("priority.haute")}</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item name="categorie" label={t("columns.categorie")} rules={[{ required: true }]}>
+            <Select
+              options={[
+                { value: "general", label: t("category.general") },
+                { value: "support", label: t("category.support") },
+                { value: "reclamation", label: t("category.reclamation") },
+              ]}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </AppShell>
   );
 }

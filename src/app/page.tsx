@@ -1,10 +1,11 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Card, Col, Row, Statistic, Typography, Spin, Empty, Alert } from "antd";
 import { Pie, Column } from "@ant-design/plots";
+import { useTranslations } from "next-intl";
+import AppShell from "@/components/AppShell";
 import styles from "./page.module.css";
 
 type Stats = {
@@ -16,7 +17,7 @@ type Stats = {
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const t = useTranslations("home");
   const [stats, setStats] = useState<Stats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsError, setStatsError] = useState<string | null>(null);
@@ -31,47 +32,35 @@ export default function Home() {
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Erreur lors du chargement des statistiques");
+          throw new Error(data.error || t("noData"));
         }
         setStats(data);
       })
       .catch((err) => {
-        setStatsError(err instanceof Error ? err.message : "Erreur inconnue");
+        setStatsError(err instanceof Error ? err.message : t("noData"));
       })
       .finally(() => setLoadingStats(false));
-  }, [status]);
+  }, [status, t]);
 
-  if (status === "loading") return <p className={styles.loading}>Chargement...</p>;
+  if (status === "loading") return <p className={styles.loading}>{t("loading")}</p>;
 
   return (
-    <main className={styles.main}>
-      <Typography.Title level={2}>Bienvenue sur l&apos;application (Stage Keyrus)</Typography.Title>
+    <AppShell>
+      <Typography.Title level={2}>{t("welcome")}</Typography.Title>
 
       {!session ? (
         <>
-          <p>Vous n&apos;êtes pas connecté.</p>
+          <p>{t("notConnected")}</p>
           <button type="button" onClick={() => signIn("keycloak")} className={styles.primaryButton}>
-            Se connecter avec Keycloak
+            {t("loginWithKeycloak")}
           </button>
         </>
       ) : (
         <>
-          <p>Connecté en tant que : {session.user?.email ?? session.user?.name}</p>
+          <p>{t("connectedAs", { email: session.user?.email ?? session.user?.name ?? "" })}</p>
           {session.error === "RefreshAccessTokenError" && (
-            <p className={styles.error}>Votre session a expiré, merci de vous reconnecter.</p>
+            <p className={styles.error}>{t("sessionExpired")}</p>
           )}
-
-          <div className={styles.actions}>
-            <button type="button" onClick={() => router.push("/form")} className={styles.primaryButton}>
-              Voir les soumissions
-            </button>
-            <button type="button" onClick={() => router.push("/submit")} className={styles.primaryButton}>
-              Nouvelle soumission
-            </button>
-            <button type="button" onClick={() => signOut()} className={styles.dangerButton}>
-              Se déconnecter
-            </button>
-          </div>
 
           <section className={styles.dashboard}>
             {loadingStats ? (
@@ -79,17 +68,17 @@ export default function Home() {
             ) : statsError ? (
               <Alert type="error" showIcon message={statsError} />
             ) : !stats || stats.total === 0 ? (
-              <Empty description="Aucune donnée disponible" />
+              <Empty description={t("noData")} />
             ) : (
               <>
                 <Row gutter={16} className={styles.statsRow}>
                   <Col xs={24} sm={8}>
-                    <Card><Statistic title="Total des soumissions" value={stats.total} /></Card>
+                    <Card><Statistic title={t("totalSubmissions")} value={stats.total} /></Card>
                   </Col>
                   <Col xs={24} sm={8}>
                     <Card>
                       <Statistic
-                        title="Priorité haute"
+                        title={t("highPriority")}
                         value={stats.byPriorite.find((p) => p.priorite === "haute")?.count ?? 0}
                         valueStyle={{ color: "#f14668" }}
                       />
@@ -97,14 +86,14 @@ export default function Home() {
                   </Col>
                   <Col xs={24} sm={8}>
                     <Card>
-                      <Statistic title="Ce mois-ci" value={stats.byMonth[stats.byMonth.length - 1]?.count ?? 0} />
+                      <Statistic title={t("thisMonth")} value={stats.byMonth[stats.byMonth.length - 1]?.count ?? 0} />
                     </Card>
                   </Col>
                 </Row>
 
                 <Row gutter={16} className={styles.chartsRow}>
                   <Col xs={24} md={12}>
-                    <Card title="Répartition par priorité">
+                    <Card title={t("byPriority")}>
                       <Pie
                         data={stats.byPriorite.map((p) => ({ type: p.priorite, value: p.count }))}
                         angleField="value"
@@ -115,7 +104,7 @@ export default function Home() {
                     </Card>
                   </Col>
                   <Col xs={24} md={12}>
-                    <Card title="Répartition par catégorie">
+                    <Card title={t("byCategory")}>
                       <Column
                         data={stats.byCategorie.map((c) => ({ categorie: c.categorie, value: c.count }))}
                         xField="categorie"
@@ -125,7 +114,7 @@ export default function Home() {
                     </Card>
                   </Col>
                   <Col xs={24}>
-                    <Card title="Évolution sur les 6 derniers mois">
+                    <Card title={t("last6Months")}>
                       <Column
                         data={stats.byMonth.map((m) => ({ mois: m.month, value: m.count }))}
                         xField="mois"
@@ -140,6 +129,6 @@ export default function Home() {
           </section>
         </>
       )}
-    </main>
+    </AppShell>
   );
 }

@@ -8,7 +8,8 @@
     "submissions": "Submissions",
     "categorie": "Category",
     "logout": "Log out",
-    "language": "Language"
+    "language": "Language",
+    "newSubmission": "New submission"
   },
   "home": {
     "loading": "Loading...",
@@ -92,5 +93,27 @@
     "addSuccess": "Category added",
     "deleteSuccess": "Category deleted",
     "genericError": "Something went wrong"
+  },
+  "submit": {
+    "title": "New submission",
+    "connectedAs": "Signed in as: {email}",
+    "loading": "Loading...",
+    "fields": {
+      "nom": "Name",
+      "nomRequired": "Name is required",
+      "message": "Message",
+      "messageRequired": "Message is required",
+      "dateEvenement": "Event date",
+      "dateEvenementRequired": "Date is required",
+      "priorite": "Priority",
+      "prioriteRequired": "Priority is required",
+      "categorie": "Category",
+      "categorieRequired": "Category is required",
+      "categoriePlaceholder": "Select a category"
+    },
+    "submitButton": "Send",
+    "successMessage": "Submission saved (id: {id})",
+    "networkError": "Network error, please try again.",
+    "genericError": "Error while submitting"
   }
 }

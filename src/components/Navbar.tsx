@@ -20,15 +20,17 @@ export default function Navbar() {
 
   const roles = session?.user?.roles ?? [];
   const isAdmin = roles.includes(ADMIN_ROLE);
+  const isAuthenticated = !!session;
 
   const navItems = [
     { href: "/", label: t("home") },
-    ...(isAdmin
+    ...(isAuthenticated
       ? [
+          { href: "/submit", label: t("newSubmission") },
           { href: "/form", label: t("submissions") },
-          { href: "/categorie", label: t("categorie") },
         ]
       : []),
+    ...(isAdmin ? [{ href: "/categorie", label: t("categorie") }] : []),
   ];
 
   useEffect(() => {
@@ -83,14 +85,18 @@ export default function Navbar() {
           )}
         </div>
 
-        <h2 className={styles.navbar__title}>Stage Keyrus</h2>
+        <Link href="/" className={styles.navbar__title}>
+          Stage Keyrus
+        </Link>
       </div>
 
       <div className={styles.navbar__actions}>
         <LanguageSwitcher />
-        <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
-          {t("logout")}
-        </button>
+        {isAuthenticated && (
+          <button onClick={() => signOut()} className={styles["navbar__logout-button"]}>
+            {t("logout")}
+          </button>
+        )}
       </div>
     </nav>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Form, Input, DatePicker, Radio, Select, Button, Alert } from "antd";
 import type { Dayjs } from "dayjs";
+import { useTranslations } from "next-intl";
 import AppShell from "@/components/AppShell";
 
 type SubmitFormValues = {
@@ -19,6 +20,8 @@ export default function SubmitPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [form] = Form.useForm<SubmitFormValues>();
+  const t = useTranslations("submit");
+  const tSub = useTranslations("submissions");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(
@@ -32,7 +35,7 @@ export default function SubmitPage() {
   }, [status, router]);
 
   if (status === "loading" || status === "unauthenticated") {
-    return <p className="loading-text">Chargement...</p>;
+    return <p className="loading-text">{t("loading")}</p>;
   }
 
   const handleFinish = async (values: SubmitFormValues) => {
@@ -55,13 +58,13 @@ export default function SubmitPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setFeedback({ type: "success", text: `Soumission enregistrée (id: ${data.id})` });
+        setFeedback({ type: "success", text: t("successMessage", { id: data.id }) });
         form.resetFields();
       } else {
-        setFeedback({ type: "error", text: data.error || "Erreur lors de l'envoi" });
+        setFeedback({ type: "error", text: data.error || t("genericError") });
       }
     } catch {
-      setFeedback({ type: "error", text: "Erreur réseau, réessayez." });
+      setFeedback({ type: "error", text: t("networkError") });
     } finally {
       setIsSubmitting(false);
     }
@@ -69,8 +72,8 @@ export default function SubmitPage() {
 
   return (
     <AppShell>
-      <h1>Nouvelle soumission</h1>
-      <p className="userInfo">Connecté en tant que : {session?.user?.email}</p>
+      <h1>{t("title")}</h1>
+      <p className="userInfo">{t("connectedAs", { email: session?.user?.email ?? "" })}</p>
 
       <Form
         form={form}
@@ -81,58 +84,58 @@ export default function SubmitPage() {
       >
         <Form.Item
           name="nom"
-          label="Nom"
-          rules={[{ required: true, message: "Le nom est requis" }]}
+          label={t("fields.nom")}
+          rules={[{ required: true, message: t("fields.nomRequired") }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
           name="message"
-          label="Message"
-          rules={[{ required: true, message: "Le message est requis" }]}
+          label={t("fields.message")}
+          rules={[{ required: true, message: t("fields.messageRequired") }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
 
         <Form.Item
           name="dateEvenement"
-          label="Date de l'événement"
-          rules={[{ required: true, message: "La date est requise" }]}
+          label={t("fields.dateEvenement")}
+          rules={[{ required: true, message: t("fields.dateEvenementRequired") }]}
         >
           <DatePicker className="fullWidth" format="DD/MM/YYYY" />
         </Form.Item>
 
         <Form.Item
           name="priorite"
-          label="Priorité"
-          rules={[{ required: true, message: "La priorité est requise" }]}
+          label={t("fields.priorite")}
+          rules={[{ required: true, message: t("fields.prioriteRequired") }]}
         >
           <Radio.Group>
-            <Radio value="basse">Basse</Radio>
-            <Radio value="moyenne">Moyenne</Radio>
-            <Radio value="haute">Haute</Radio>
+            <Radio value="basse">{tSub("priority.basse")}</Radio>
+            <Radio value="moyenne">{tSub("priority.moyenne")}</Radio>
+            <Radio value="haute">{tSub("priority.haute")}</Radio>
           </Radio.Group>
         </Form.Item>
 
         <Form.Item
           name="categorie"
-          label="Catégorie"
-          rules={[{ required: true, message: "La catégorie est requise" }]}
+          label={t("fields.categorie")}
+          rules={[{ required: true, message: t("fields.categorieRequired") }]}
         >
           <Select
-            placeholder="Sélectionner une catégorie"
+            placeholder={t("fields.categoriePlaceholder")}
             options={[
-              { value: "general", label: "Général" },
-              { value: "support", label: "Support" },
-              { value: "reclamation", label: "Réclamation" },
+              { value: "general", label: tSub("category.general") },
+              { value: "support", label: tSub("category.support") },
+              { value: "reclamation", label: tSub("category.reclamation") },
             ]}
           />
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            Envoyer
+            {t("submitButton")}
           </Button>
         </Form.Item>
       </Form>

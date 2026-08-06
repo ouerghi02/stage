@@ -9,11 +9,10 @@
   min-height: 70px;
 }
 
-.navbar > div {
+.navbar__left {
   display: flex;
   align-items: center;
-  gap: 40px;
-  flex: 1;
+  gap: 16px;
 }
 
 .navbar__title {
@@ -21,39 +20,75 @@
   font-size: 24px;
   font-weight: bold;
   white-space: nowrap;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
-.navbar__list {
+.navbar__menu {
+  position: relative;
+}
+
+.navbar__menuButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.navbar__menuButton:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.navbar__menuIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background-color: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   list-style: none;
   margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 0;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 50;
 }
 
-.navbar__list li {
+.navbar__dropdown li {
   margin: 0;
   padding: 0;
 }
 
-.navbar__link {
+.navbar__dropdownLink {
   display: block;
   color: #d1d5db;
   text-decoration: none;
-  padding: 10px 16px;
+  padding: 10px 12px;
+  border-radius: 4px;
   transition: all 0.2s ease;
-  border-bottom: 3px solid transparent;
 }
 
-.navbar__link:hover {
+.navbar__dropdownLink:hover {
   color: white;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-.navbar__link--active {
+.navbar__dropdownLink--active {
   color: white;
-  border-bottom-color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: rgba(59, 130, 246, 0.2);
 }
 
 .navbar__logout-button {
@@ -80,47 +115,20 @@
   gap: 12px;
 }
 
-.navbar__new-button {
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.navbar__new-button:hover {
-  background-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
-
 @media (max-width: 768px) {
   .navbar {
     flex-wrap: wrap;
     gap: 16px;
   }
 
-  .navbar > div {
-    gap: 16px;
-    width: 100%;
-  }
-
   .navbar__title {
     font-size: 20px;
   }
 
-  .navbar__list {
-    gap: 0;
-  }
-
-  .navbar__link {
-    padding: 8px 12px;
-    font-size: 14px;
+  .navbar__dropdown {
+    left: 0;
+    right: 0;
+    min-width: unset;
   }
 
   .navbar__logout-button {
@@ -130,10 +138,5 @@
   .navbar__actions {
     width: 100%;
     flex-direction: column;
-  }
-
-  .navbar__new-button {
-    width: 100%;
-    text-align: center;
   }
 }
