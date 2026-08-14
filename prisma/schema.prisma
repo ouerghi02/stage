@@ -19,3 +19,13 @@ model Submission {
 
   @@map("submissions")
 }
+
+model Categorie {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  type      String
+  photo     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}

@@ -9,7 +9,8 @@
     "categorie": "Category",
     "logout": "Log out",
     "language": "Language",
-    "newSubmission": "New submission"
+    "newSubmission": "New submission",
+    "manageCategories": "Manage categories"
   },
   "home": {
     "loading": "Loading...",
@@ -92,7 +93,14 @@
     "empty": "No category yet",
     "addSuccess": "Category added",
     "deleteSuccess": "Category deleted",
-    "genericError": "Something went wrong"
+    "genericError": "Something went wrong",
+    "edit": "Edit",
+    "editModalTitle": "Edit category",
+    "save": "Save",
+    "cancel": "Cancel",
+    "updateSuccess": "Category updated",
+    "deleteConfirmOk": "Yes, delete",
+    "deleteConfirmCancel": "Cancel"
   },
   "submit": {
     "title": "New submission",

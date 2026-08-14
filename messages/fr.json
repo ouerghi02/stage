@@ -9,7 +9,8 @@
     "categorie": "Catégorie",
     "logout": "Se déconnecter",
     "language": "Langue",
-    "newSubmission": "Nouvelle soumission"
+    "newSubmission": "Nouvelle soumission",
+    "manageCategories": "Gestion des catégories"
   },
   "home": {
     "loading": "Chargement...",
@@ -92,7 +93,14 @@
     "empty": "Aucune catégorie pour le moment",
     "addSuccess": "Catégorie ajoutée",
     "deleteSuccess": "Catégorie supprimée",
-    "genericError": "Une erreur est survenue"
+    "genericError": "Une erreur est survenue",
+    "edit": "Modifier",
+    "editModalTitle": "Modifier la catégorie",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "updateSuccess": "Catégorie mise à jour",
+    "deleteConfirmOk": "Oui, supprimer",
+    "deleteConfirmCancel": "Annuler"
   },
   "submit": {
     "title": "Nouvelle soumission",

@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -9,8 +8,6 @@ import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../app/Languageswitcher";
 import styles from "./Navbar.module.css";
 
-const ADMIN_ROLE = "admin";
-
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -18,8 +15,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const roles = session?.user?.roles ?? [];
-  const isAdmin = roles.includes(ADMIN_ROLE);
   const isAuthenticated = !!session;
 
   const navItems = [
@@ -28,9 +23,10 @@ export default function Navbar() {
       ? [
           { href: "/submit", label: t("newSubmission") },
           { href: "/form", label: t("submissions") },
+          { href: "/categorie", label: t("categorie") },
+          { href: "/categorie/gestion", label: t("manageCategories") },
         ]
       : []),
-    ...(isAdmin ? [{ href: "/categorie", label: t("categorie") }] : []),
   ];
 
   useEffect(() => {
