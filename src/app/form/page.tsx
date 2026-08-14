@@ -17,7 +17,7 @@ type Submission = {
   message: string;
   dateEvenement: string;
   priorite: "basse" | "moyenne" | "haute";
-  categorie: "general" | "support" | "reclamation";
+  categorie: string;
   createdAt: string;
 };
 
@@ -27,6 +27,13 @@ type EditFormValues = {
   dateEvenement: Dayjs;
   priorite: Submission["priorite"];
   categorie: Submission["categorie"];
+};
+
+type Categorie = {
+  id: number;
+  nom: string;
+  type: string;
+  photo: string | null;
 };
 
 const priorityColor: Record<Submission["priorite"], string> = {
@@ -60,6 +67,13 @@ export default function FormPage() {
   const [editingRecord, setEditingRecord] = useState<Submission | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [editForm] = Form.useForm<EditFormValues>();
+
+  // Catégories chargées depuis la table Categorie (gérée dans
+  // /categorie/gestion). Utilisées à la fois pour le filtre de colonne
+  // et pour le select du modal de modification, afin que toute
+  // création/suppression/renommage fait dans la gestion des catégories
+  // se répercute automatiquement ici.
+  const [categories, setCategories] = useState<Categorie[]>([]);
 
   const [params, setParams] = useState<Params>(() => {
     const categorieFromUrl = searchParams.get("categorie");
@@ -100,10 +114,26 @@ export default function FormPage() {
     }
   }, [params, t]);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setCategories(data.categories);
+    } catch {
+      message.error(t("categoriesLoadError"));
+    }
+  }, [t]);
+
   useEffect(() => {
     if (status !== "authenticated") return;
     fetchSubmissions();
   }, [status, fetchSubmissions]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    fetchCategories();
+  }, [status, fetchCategories]);
 
   const openEditModal = (record: Submission) => {
     setEditingRecord(record);
@@ -187,13 +217,12 @@ export default function FormPage() {
       title: t("columns.categorie"),
       dataIndex: "categorie",
       key: "categorie",
-      filters: [
-        { text: t("category.general"), value: "general" },
-        { text: t("category.support"), value: "support" },
-        { text: t("category.reclamation"), value: "reclamation" },
-      ],
+      filters: categories.map((c) => ({ text: c.nom, value: c.nom })),
       filteredValue: params.categorie.length ? params.categorie : null,
-      render: (categorie: Submission["categorie"]) => t(`category.${categorie}`),
+      // La catégorie est déjà un libellé lisible (son "nom" saisi dans la
+      // gestion des catégories), donc on l'affiche telle quelle, sans
+      // passer par une clé de traduction figée.
+      render: (categorie: Submission["categorie"]) => categorie,
     },
     {
       title: t("columns.createdAt"),
@@ -321,13 +350,7 @@ export default function FormPage() {
             </Radio.Group>
           </Form.Item>
           <Form.Item name="categorie" label={t("columns.categorie")} rules={[{ required: true }]}>
-            <Select
-              options={[
-                { value: "general", label: t("category.general") },
-                { value: "support", label: t("category.support") },
-                { value: "reclamation", label: t("category.reclamation") },
-              ]}
-            />
+            <Select options={categories.map((c) => ({ value: c.nom, label: c.nom }))} />
           </Form.Item>
         </Form>
       </Modal>

@@ -66,7 +66,8 @@
     "total": "{count} submissions",
     "updateSuccess": "Submission updated",
     "deleteSuccess": "Submission deleted",
-    "genericError": "Something went wrong"
+    "genericError": "Something went wrong",
+    "categoriesLoadError": "Unable to load categories"
   },
   "categorie": {
     "title": "Category management",
@@ -122,6 +123,9 @@
     "submitButton": "Send",
     "successMessage": "Submission saved (id: {id})",
     "networkError": "Network error, please try again.",
-    "genericError": "Error while submitting"
+    "genericError": "Error while submitting",
+    "categoriesLoadError": "Unable to load categories",
+    "categoriesLoading": "Loading categories...",
+    "categoriesEmpty": "No category available, create one in category management"
   }
 }

@@ -13,7 +13,14 @@ type SubmitFormValues = {
   message: string;
   dateEvenement: Dayjs;
   priorite: "basse" | "moyenne" | "haute";
-  categorie: "general" | "support" | "reclamation";
+  categorie: string;
+};
+
+type Categorie = {
+  id: number;
+  nom: string;
+  type: string;
+  photo: string | null;
 };
 
 export default function SubmitPage() {
@@ -28,11 +35,46 @@ export default function SubmitPage() {
     null
   );
 
+  const [categories, setCategories] = useState<Categorie[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
+
+  // Les catégories viennent de la table Categorie (gérée dans /categorie/gestion).
+  // On les recharge à chaque fois que la page est affichée pour que toute
+  // création/modification/suppression faite dans la gestion des catégories
+  // soit immédiatement reflétée ici, sans rien coder en dur.
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    let cancelled = false;
+
+    const fetchCategories = async () => {
+      setIsLoadingCategories(true);
+      try {
+        const res = await fetch("/api/categories");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        if (!cancelled) setCategories(data.categories);
+      } catch {
+        if (!cancelled) {
+          setFeedback({ type: "error", text: t("categoriesLoadError") });
+        }
+      } finally {
+        if (!cancelled) setIsLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [status, t]);
 
   if (status === "loading" || status === "unauthenticated") {
     return <p className="loading-text">{t("loading")}</p>;
@@ -125,11 +167,9 @@ export default function SubmitPage() {
         >
           <Select
             placeholder={t("fields.categoriePlaceholder")}
-            options={[
-              { value: "general", label: tSub("category.general") },
-              { value: "support", label: tSub("category.support") },
-              { value: "reclamation", label: tSub("category.reclamation") },
-            ]}
+            loading={isLoadingCategories}
+            notFoundContent={isLoadingCategories ? t("categoriesLoading") : t("categoriesEmpty")}
+            options={categories.map((c) => ({ value: c.nom, label: c.nom }))}
           />
         </Form.Item>
 

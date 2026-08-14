@@ -66,7 +66,8 @@
     "total": "{count} soumissions",
     "updateSuccess": "Soumission mise à jour",
     "deleteSuccess": "Soumission supprimée",
-    "genericError": "Une erreur est survenue"
+    "genericError": "Une erreur est survenue",
+    "categoriesLoadError": "Impossible de charger les catégories"
   },
   "categorie": {
     "title": "Gestion des catégories",
@@ -122,6 +123,9 @@
     "submitButton": "Envoyer",
     "successMessage": "Soumission enregistrée (id : {id})",
     "networkError": "Erreur réseau, réessayez.",
-    "genericError": "Erreur lors de l'envoi"
+    "genericError": "Erreur lors de l'envoi",
+    "categoriesLoadError": "Impossible de charger les catégories",
+    "categoriesLoading": "Chargement des catégories...",
+    "categoriesEmpty": "Aucune catégorie disponible, créez-en une dans la gestion des catégories"
   }
 }
